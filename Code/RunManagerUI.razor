@@ -1,0 +1,48 @@
+@using Sandbox
+@using Sandbox.UI
+@inherits PanelComponent
+
+<root class="run-manager-screen @StateClass">
+	@if ( Manager.IsValid() && Manager.State == RunState.WaitingToStart )
+	{
+		<div class="run-dialog">
+			<div class="run-title">Scrapspell</div>
+			<div class="run-message">Turn cursed junk into a weapon.</div>
+			<button onclick=@Manager.StartRun>Start Run</button>
+		</div>
+	}
+	else if ( Manager.IsValid() && Manager.State == RunState.Victory )
+	{
+		<div class="run-dialog">
+			<div class="run-title">Junkyard Conquered</div>
+			<div class="run-message">The Brute is scrap.</div>
+			<button onclick=@Manager.RestartRun>Run Again</button>
+		</div>
+	}
+	else if ( Manager.IsValid() && Manager.State == RunState.PlayerDead )
+	{
+		<div class="run-dialog">
+			<div class="run-title">Run Crushed</div>
+			<div class="run-message">The scrapyard keeps what it breaks.</div>
+			<button onclick=@Manager.RestartRun>Restart Run</button>
+		</div>
+	}
+</root>
+
+@code
+{
+	[Property] public RunManager Manager { get; set; }
+
+	string StateClass => Manager.IsValid() ? Manager.State.ToString().ToLower() : "";
+
+	protected override void OnUpdate()
+	{
+		base.OnUpdate();
+		Manager ??= Scene.GetAllComponents<RunManager>().FirstOrDefault();
+	}
+
+	protected override int BuildHash()
+	{
+		return Manager.IsValid() ? (int)Manager.State : -1;
+	}
+}

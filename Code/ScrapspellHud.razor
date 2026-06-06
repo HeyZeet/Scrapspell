@@ -1,0 +1,60 @@
+@using Sandbox
+@using Sandbox.UI
+@inherits PanelComponent
+
+<root class="scrapspell-hud">
+	<div class="weapon-name">Pipe Blaster</div>
+	<div class="ammo">@AmmoText</div>
+
+	@if ( IsReloading )
+	{
+		<div class="reload">Reloading...</div>
+	}
+
+	@if ( HasHealth )
+	{
+		<div class="health">HP @HealthText</div>
+	}
+</root>
+
+@code
+{
+	[Property] public PipeBlaster Weapon { get; set; }
+	[Property] public HealthComponent PlayerHealth { get; set; }
+
+	string AmmoText => Weapon.IsValid() ? $"{Weapon.AmmoInClip} / {Weapon.ClipSize}" : "-- / --";
+	bool IsReloading => Weapon.IsValid() && Weapon.IsReloading;
+	bool HasHealth => PlayerHealth.IsValid();
+	string HealthText => HasHealth ? $"{PlayerHealth.CurrentHealth.CeilToInt()} / {PlayerHealth.MaxHealth.CeilToInt()}" : "";
+
+	protected override void OnUpdate()
+	{
+		base.OnUpdate();
+		FindReferencesIfNeeded();
+	}
+
+	protected override int BuildHash()
+	{
+		FindReferencesIfNeeded();
+
+		return System.HashCode.Combine(
+			Weapon.IsValid() ? Weapon.AmmoInClip : -1,
+			Weapon.IsValid() ? Weapon.ClipSize : -1,
+			Weapon.IsValid() && Weapon.IsReloading,
+			PlayerHealth.IsValid() ? PlayerHealth.CurrentHealth.CeilToInt() : -1,
+			PlayerHealth.IsValid() ? PlayerHealth.MaxHealth.CeilToInt() : -1
+		);
+	}
+
+	void FindReferencesIfNeeded()
+	{
+		if ( !Weapon.IsValid() )
+			Weapon = Scene.GetAllComponents<PipeBlaster>().FirstOrDefault();
+
+		if ( !PlayerHealth.IsValid() )
+		{
+			var player = Scene.Directory.FindByName( "Player" ).FirstOrDefault();
+			PlayerHealth = player?.Components.Get<HealthComponent>();
+		}
+	}
+}

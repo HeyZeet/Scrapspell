@@ -1,0 +1,53 @@
+.run-manager-screen {
+	position: absolute;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(10, 8, 7, 0.78);
+	font-family: Poppins;
+	pointer-events: all;
+
+	&.waitingtostart,
+	&.victory,
+	&.playerdead {
+		display: flex;
+	}
+}
+
+.run-dialog {
+	width: 440px;
+	flex-direction: column;
+	align-items: center;
+	gap: 14px;
+	padding: 28px;
+	background-color: #171411;
+	border: 2px solid #88733c;
+	box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65);
+}
+
+.run-title {
+	font-size: 34px;
+	font-weight: 800;
+	color: #ffd86b;
+}
+
+.run-message {
+	font-size: 18px;
+	color: #d8d1c4;
+}
+
+button {
+	min-width: 180px;
+	padding: 12px 20px;
+	background-color: #3a3124;
+	border: 2px solid #d6b24a;
+	color: #f5efe2;
+	font-size: 18px;
+	font-weight: 700;
+	cursor: pointer;
+
+	&:hover {
+		background-color: #51432d;
+	}
+}

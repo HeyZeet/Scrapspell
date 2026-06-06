@@ -1,0 +1,35 @@
+.scrapspell-hud {
+	position: absolute;
+	left: 32px;
+	bottom: 32px;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 4px;
+	padding: 12px 14px;
+	background-color: rgba(12, 10, 8, 0.72);
+	border-left: 4px solid #d6b24a;
+	color: #f5efe2;
+	font-family: Poppins;
+	font-weight: 700;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+.weapon-name {
+	font-size: 22px;
+	color: #ffd86b;
+}
+
+.ammo {
+	font-size: 34px;
+	line-height: 36px;
+}
+
+.reload {
+	font-size: 18px;
+	color: #ff8659;
+}
+
+.health {
+	font-size: 18px;
+	color: #9ee67a;
+}

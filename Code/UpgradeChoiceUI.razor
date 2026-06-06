@@ -1,0 +1,170 @@
+@using Sandbox
+@using Sandbox.UI
+@inherits PanelComponent
+
+<root class="upgrade-choice-screen @(IsOpen ? "open" : "")">
+	@if ( IsOpen )
+	{
+		<div class="upgrade-window">
+			<div class="title">Choose Your Scrap Upgrade</div>
+
+			<div class="choices">
+				@foreach ( var choice in currentChoices )
+				{
+					<button onclick=@( () => SelectUpgrade( choice.Kind ) )>
+						<div class="choice-name">@choice.Name</div>
+						<div class="choice-effect">@choice.Description</div>
+					</button>
+				}
+			</div>
+		</div>
+	}
+</root>
+
+@code
+{
+	[Property] public PipeBlaster Weapon { get; set; }
+	[Property] public EnemySpawner Spawner { get; set; }
+	[Property] public ScrapWallet Wallet { get; set; }
+	[Property] public HealthComponent PlayerHealth { get; set; }
+
+	public bool IsOpen { get; private set; }
+	public event System.Action UpgradeChosen;
+
+	readonly List<UpgradeChoice> currentChoices = new();
+
+	readonly List<UpgradeChoice> allChoices = new()
+	{
+		new( UpgradeKind.ExtraBolts, "Extra Bolts", "+2 pellets per shot" ),
+		new( UpgradeKind.ReinforcedPipe, "Reinforced Pipe", "+25% pellet damage" ),
+		new( UpgradeKind.GreasedTrigger, "Greased Trigger", "+15% fire rate" ),
+		new( UpgradeKind.WideMouth, "Wide Mouth", "+4 pellets, +20% spread" ),
+		new( UpgradeKind.HeavySlugMix, "Heavy Slug Mix", "-30% pellets, +60% damage" ),
+		new( UpgradeKind.ShellKicker, "Shell Kicker", "Reloading knocks nearby enemies back" ),
+		new( UpgradeKind.ScrapMagnet, "Scrap Magnet", "+50% scrap magnet radius" ),
+		new( UpgradeKind.RustBurst, "Rust Burst", "Pipe Blaster kills damage nearby enemies" ),
+		new( UpgradeKind.EmergencyPatch, "Emergency Patch", "Heal 25 health" )
+	};
+
+	protected override void OnUpdate()
+	{
+		base.OnUpdate();
+		FindReferencesIfNeeded();
+	}
+
+	protected override int BuildHash()
+	{
+		var first = currentChoices.Count > 0 ? (int)currentChoices[0].Kind : -1;
+		var second = currentChoices.Count > 1 ? (int)currentChoices[1].Kind : -1;
+		var third = currentChoices.Count > 2 ? (int)currentChoices[2].Kind : -1;
+
+		return System.HashCode.Combine( IsOpen, first, second, third );
+	}
+
+	public void Open()
+	{
+		FindReferencesIfNeeded();
+		RollChoices();
+		IsOpen = true;
+		Log.Info( "Upgrade choice opened with 3 random upgrades." );
+	}
+
+	public void Close()
+	{
+		IsOpen = false;
+	}
+
+	void RollChoices()
+	{
+		var available = allChoices.ToList();
+
+		// Shuffle the hardcoded catalog, then take the first three unique entries.
+		for ( var i = available.Count - 1; i > 0; i-- )
+		{
+			var swapIndex = Game.Random.Int( 0, i );
+			(available[i], available[swapIndex]) = (available[swapIndex], available[i]);
+		}
+
+		currentChoices.Clear();
+		currentChoices.AddRange( available.Take( 3 ) );
+	}
+
+	void SelectUpgrade( UpgradeKind kind )
+	{
+		switch ( kind )
+		{
+			case UpgradeKind.ExtraBolts:
+				Weapon?.ApplyExtraBoltsUpgrade( 2 );
+				break;
+			case UpgradeKind.ReinforcedPipe:
+				Weapon?.ApplyReinforcedPipeUpgrade();
+				break;
+			case UpgradeKind.GreasedTrigger:
+				Weapon?.ApplyGreasedTriggerUpgrade();
+				break;
+			case UpgradeKind.WideMouth:
+				Weapon?.ApplyWideMouthUpgrade();
+				break;
+			case UpgradeKind.HeavySlugMix:
+				Weapon?.ApplyHeavySlugMixUpgrade();
+				break;
+			case UpgradeKind.ShellKicker:
+				Weapon?.ApplyShellKickerUpgrade();
+				break;
+			case UpgradeKind.ScrapMagnet:
+				Wallet?.ApplyScrapMagnetUpgrade();
+				break;
+			case UpgradeKind.RustBurst:
+				Weapon?.ApplyRustBurstUpgrade();
+				break;
+			case UpgradeKind.EmergencyPatch:
+				PlayerHealth?.Heal( 25.0f );
+				break;
+		}
+
+		FinishChoice();
+	}
+
+	void FinishChoice()
+	{
+		if ( !IsOpen )
+			return;
+
+		IsOpen = false;
+		UpgradeChosen?.Invoke();
+		Log.Info( "Upgrade selected." );
+	}
+
+	void FindReferencesIfNeeded()
+	{
+		if ( !Weapon.IsValid() )
+			Weapon = Scene.GetAllComponents<PipeBlaster>().FirstOrDefault();
+
+		if ( !Spawner.IsValid() )
+			Spawner = Scene.GetAllComponents<EnemySpawner>().FirstOrDefault();
+
+		if ( !Wallet.IsValid() )
+			Wallet = Scene.GetAllComponents<ScrapWallet>().FirstOrDefault();
+
+		if ( !PlayerHealth.IsValid() )
+		{
+			var player = Scene.Directory.FindByName( "Player" ).FirstOrDefault();
+			PlayerHealth = player?.Components.Get<HealthComponent>();
+		}
+	}
+
+	enum UpgradeKind
+	{
+		ExtraBolts,
+		ReinforcedPipe,
+		GreasedTrigger,
+		WideMouth,
+		HeavySlugMix,
+		ShellKicker,
+		ScrapMagnet,
+		RustBurst,
+		EmergencyPatch
+	}
+
+	sealed record UpgradeChoice( UpgradeKind Kind, string Name, string Description );
+}

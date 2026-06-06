@@ -1,0 +1,502 @@
+he Pitch
+You wake up in a cursed scrapyard where every weapon is made from broken junk: nail guns, car batteries, pipe launchers, leaf blowers, saw blades, magnet coils, and propane tanks.
+Each run, you fight through a chain of small combat rooms. After every room, you choose one weird upgrade. The twist is that your weapons are not normal guns. They are unstable scrap tools that can be combined with modifiers.
+Example:
+Your starting weapon might be a Pipe Blaster.
+Then you pick upgrades like:
+
+
+Magnetized Rounds: bullets pull small enemies together.
+
+
+Car Battery Core: shots chain lightning between metal objects.
+
+
+Rust Curse: enemies hit by your shots become brittle and take more knockback.
+
+
+Propane Kickback: every reload causes a small explosion behind you.
+
+
+Junk Shield: scrap pieces orbit you and block one hit.
+
+
+By the end of a run, your basic weapon becomes something ridiculous.
+The game’s identity is:
+
+A first-person roguelite where every run turns broken junk into stupidly powerful cursed weapons.
+
+That is unique enough to stand apart, but still understandable.
+
+Why This Fits the Current Market
+Small roguelite games can still punch way above their weight because players understand the loop immediately: fight, upgrade, repeat, get stronger, die, try again. A 2025 Steam-tag research paper described game trends as shifting between fads, fashions, and stable classics, with genre trends often lasting multiple years rather than disappearing instantly.  Roguelites have also stayed active enough that there are monthly 2026 community roundups for new roguelike/roguelite releases, which shows the genre still has an audience. 
+But the market is crowded, so the hook matters. “FPS roguelite” alone is not enough. Cursed junk weapons gives you a visual identity, a theme, and easy content ideas without needing huge modeling skills.
+You do not need beautiful AAA assets. You can use simple junkyard props, rough blockout arenas, basic enemy shapes, and stylized effects. The charm can come from the weird weapon behavior.
+
+Core Game Loop
+The entire game can be built around this loop:
+
+
+Spawn in a small arena room.
+
+
+Fight 1–3 enemy types.
+
+
+Room clears.
+
+
+Pick 1 upgrade from 3 choices.
+
+
+Move to the next room.
+
+
+Every few rooms, fight a mini-boss.
+
+
+Die or beat the final boss.
+
+
+Unlock new scrap weapons, perks, and modifiers.
+
+
+That is it.
+No open world. No survival crafting. No huge story. No complicated economy.
+Just combat, upgrades, and replayability.
+
+Why This Is Good for a Beginner
+This idea is beginner-friendly because you can build it in layers.
+You do not need to build the whole roguelite at once.
+Your first playable version only needs:
+
+
+One test room.
+
+
+One player weapon.
+
+
+One enemy.
+
+
+One upgrade.
+
+
+One health system.
+
+
+One “room clear” trigger.
+
+
+That is already a game prototype.
+Then you add more pieces one at a time.
+This also works well with Codex because each feature can be broken into clear programming tasks:
+
+“Create a WeaponUpgrade component that modifies fire rate, damage, reload speed, projectile behavior, and knockback.”
+
+
+“Create a RoomManager that spawns enemies and opens the exit when all enemies are dead.”
+
+
+“Create an UpgradeChoice UI that shows 3 random upgrades after a room is cleared.”
+
+Those are much easier tasks than asking Codex to “make a full roguelite.”
+
+The Main Hook: Scrap Synergy
+The game should not just have boring stat upgrades like “+10% damage.”
+It should have synergies that are simple to code but feel wild.
+For example:
+Weapon base
+Pipe Blaster
+A slow shotgun made from pipe fittings.
+Upgrade 1
+Magnet Slugs
+Enemies hit by pellets get pulled toward each other.
+Upgrade 2
+Battery Leak
+Pulled enemies spark electricity between each other.
+Upgrade 3
+Oil Slick
+Enemies killed by electricity leave slippery burning oil.
+Now the player feels like they created a “build,” even if under the hood it is just a few simple effects.
+That is the roguelite magic.
+
+Starter Weapons
+Keep the first version to 3 weapons max.
+1. Pipe Blaster
+Shotgun-style scrap cannon.
+Easy to make, satisfying, good for knockback.
+Special identity: pushes enemies and objects around.
+2. Nail Spitter
+Fast nail-gun SMG.
+Lower damage, high fire rate.
+Special identity: pins enemies to walls or marks weak points.
+3. Battery Wand
+Electric zap weapon.
+Short-range beam or chain lightning.
+Special identity: chains damage through metal enemies or scrap piles.
+For your first MVP, only make the Pipe Blaster.
+
+Enemy Ideas
+Start with only 3 enemy types.
+1. Scrapling
+Basic small melee enemy. Runs at the player.
+Purpose: teaches movement and shooting.
+2. Boomcan
+Slow enemy with a propane tank body. Explodes when killed.
+Purpose: creates chaos and positioning choices.
+3. Magnet Head
+Pulls loose scrap or projectiles toward itself.
+Purpose: makes fights feel different without needing complex AI.
+The enemies can be visually simple: junk piles with glowing eyes, a propane cylinder with legs, a floating magnet head, etc.
+
+Room Design
+Do not build massive maps.
+Use small modular rooms:
+
+
+Square arena.
+
+
+Long hallway arena.
+
+
+Circular pit.
+
+
+Room with raised platforms.
+
+
+Room with moving crusher.
+
+
+Room with explosive barrels.
+
+
+Room with water/electric hazard.
+
+
+Room with rotating scrap magnet.
+
+
+Each room should be small enough that you can finish it in a day or two.
+Your “roguelite map” can simply be a sequence of loaded rooms:
+Start Room → Combat Room → Upgrade Room → Combat Room → Mini Boss → Combat Room → Boss
+You can fake procedural generation at first by randomly picking from handmade rooms.
+That is much easier and usually better than trying to generate real procedural levels.
+
+The Unique Mechanic: Scrap Meter
+This is what gives the game its own identity.
+Enemies drop scrap when killed. Scrap automatically flies toward the player.
+Scrap can be used in 3 ways:
+1. Repair
+Spend scrap to heal.
+2. Overload
+Spend scrap to temporarily supercharge your weapon.
+3. Forge
+Spend scrap between rooms to upgrade or reroll choices.
+This creates a simple decision:
+
+Do I heal now, save scrap for upgrades, or spend it for a power burst?
+
+That one resource gives the game depth without needing complicated systems.
+
+Example Upgrades
+These are simple but exciting.
+Common Upgrades
+
+
+Extra Bolts: +1 projectile per shot.
+
+
+Greased Trigger: faster fire rate.
+
+
+Reinforced Grip: less recoil.
+
+
+Thicker Scrap: more max health.
+
+
+Lucky Junk: more scrap drops.
+
+
+Weird Upgrades
+
+
+Propane Reload: reloading creates a small explosion.
+
+
+Magnet Blood: killed enemies pull nearby enemies inward.
+
+
+Battery Curse: every 5th shot chains lightning.
+
+
+Rust Bloom: enemies explode into shrapnel on death.
+
+
+Junk Halo: scrap orbits you and blocks damage.
+
+
+Sawblade Echo: shots bounce once.
+
+
+Loose Wiring: taking damage shocks nearby enemies.
+
+
+Oil Trail: sprinting leaves a slippery trail that enemies stumble on.
+
+
+Rare Upgrades
+
+
+Forklift Soul: dashing rams enemies.
+
+
+Haunted Engine: your weapon fires by itself for 3 seconds after a kill.
+
+
+Trash Compactor: enemies crushed into walls drop bonus scrap.
+
+
+The Big Magnet: once per room, pull all enemies toward the center.
+
+
+
+The First Boss
+Boss: The Compactor King
+A giant junkyard crusher monster.
+Attacks:
+
+
+Slams the ground, sending scrap waves outward.
+
+
+Pulls metal objects toward itself.
+
+
+Drops crushing blocks from above.
+
+
+Opens its weak spot after slamming.
+
+
+This boss fits the theme and can be made with simple animations. It does not need advanced character modeling. It could literally be a big compactor machine with a glowing core.
+
+Art Style
+Do not aim for realism.
+Aim for:
+
+Grimy, goofy, cursed junkyard.
+
+Think:
+
+
+Rusty metal.
+
+
+Glowing green/yellow magic.
+
+
+Cartoon-ish silhouettes.
+
+
+Big readable props.
+
+
+Over-the-top weapon effects.
+
+
+Simple enemy models with personality.
+
+
+This helps because your models do not need to be perfect. A bad realistic model looks bad. A chunky stylized junk model can look intentional.
+The market also seems to reward games with strong visual identity. A recent game-industry piece about 2026 showcases pointed out that distinct aesthetics and creative risk-taking are standing out more than generic visuals. 
+
+MVP Version
+This is the version you should actually build first.
+Title
+Scrapspell: Prototype
+MVP Goal
+A 5-minute playable roguelite FPS run.
+Required Features
+
+
+First-person player controller.
+
+
+Health system.
+
+
+One weapon: Pipe Blaster.
+
+
+One enemy: Scrapling.
+
+
+One arena.
+
+
+Enemy spawner.
+
+
+Room clear condition.
+
+
+Upgrade screen with 3 choices.
+
+
+10 upgrades total.
+
+
+Scrap pickup currency.
+
+
+Death screen.
+
+
+Restart run button.
+
+
+That is enough to test whether the game is fun.
+Do not build menus, cosmetics, multiplayer, boss fights, weapon unlocks, complex procedural generation, or a save system at first.
+
+Development Roadmap
+Phase 1: Combat Toy
+Goal: make shooting feel fun.
+Build:
+
+
+Player movement.
+
+
+Pipe Blaster.
+
+
+Damageable enemy.
+
+
+Enemy chase AI.
+
+
+Enemy death.
+
+
+Scrap pickup.
+
+
+Success test:
+
+Can you run around one room shooting enemies for 2 minutes and still enjoy it?
+
+If no, fix movement, weapon feel, enemy reactions, knockback, sounds, and particles.
+
+Phase 2: Room Loop
+Goal: make it feel like a game.
+Build:
+
+
+Start room.
+
+
+Combat room.
+
+
+Enemy wave spawner.
+
+
+Door opens when enemies die.
+
+
+Upgrade choice appears.
+
+
+Next room starts.
+
+
+Success test:
+
+Can you play 3 rooms in a row without needing debug commands?
+
+
+Phase 3: Upgrade System
+Goal: make runs feel different.
+Build:
+
+
+Upgrade database.
+
+
+Random 3-choice upgrade UI.
+
+
+Upgrade rarity.
+
+
+Upgrade stacking.
+
+
+10–15 upgrades.
+
+
+Success test:
+
+Does the player feel stronger by room 3?
+
+
+Phase 4: Content Pass
+Goal: add variety.
+Build:
+
+
+2 more enemies.
+
+
+1 more weapon.
+
+
+4–6 rooms.
+
+
+1 mini-boss.
+
+
+More sound effects.
+
+
+Basic run summary screen.
+
+
+Success test:
+
+Can someone replay it 3 times and get slightly different runs?
+
+
+Phase 5: Public S&box Release
+Goal: get feedback.
+Build:
+
+
+Main menu.
+
+
+Settings.
+
+
+Better UI.
+
+
+Simple tutorial.
+
+
+Leaderboard or run timer.
+
+
+Polish pass.
+
+
+Success test:
+
+Can a random S&box player understand the game in under 60 seconds?
