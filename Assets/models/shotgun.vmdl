@@ -1,0 +1,273 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:modeldoc30:version{8c2d7a91-9c42-4bf0-883a-5a3b1762d4f1} -->
+{
+	rootNode = 
+	{
+		_class = "RootNode"
+		children = 
+		[
+			{
+				_class = "MaterialGroupList"
+				children = 
+				[
+					{
+						_class = "DefaultMaterialGroup"
+						remaps = 
+						[
+							{
+								from = "metalmain.vmat"
+								to = "materials/shotgun/metalmain.vmat"
+							},
+							{
+								from = "woodmain.vmat"
+								to = "materials/shotgun/woodmain.vmat"
+							},
+							{
+								from = "woodwear.vmat"
+								to = "materials/shotgun/woodwear.vmat"
+							},
+							{
+								from = "metaledgewear.vmat"
+								to = "materials/shotgun/metaledgewear.vmat"
+							},
+							{
+								from = "grimeblack.vmat"
+								to = "materials/shotgun/grimeblack.vmat"
+							},
+						]
+						use_global_default = false
+						global_default_material = "materials/shotgun/shotgunmetal.vmat"
+					},
+				]
+			},
+			{
+				_class = "PhysicsShapeList"
+				children = 
+				[
+					{
+						_class = "PhysicsHullFromRender"
+						parent_bone = ""
+						surface_prop = "default"
+						collision_tags = "solid"
+						faceMergeAngle = 20.0
+						maxHullVertices = 32
+						hull_mode = "HullPerElement"
+					},
+				]
+			},
+			{
+				_class = "RenderMeshList"
+				children = 
+				[
+					{
+						_class = "RenderMeshFile"
+						filename = "models/shotgun.fbx"
+						import_translation = [ 0.0, 0.0, 0.0 ]
+						import_rotation = [ 0.0, 0.0, 0.0 ]
+						import_scale = 1.0
+						align_origin_x_type = "None"
+						align_origin_y_type = "None"
+						align_origin_z_type = "None"
+						parent_bone = ""
+						import_filter = 
+						{
+							exclude_by_default = true
+							exception_list = 
+							[
+								"BarrelHandGuard",
+								"FrontIronSights",
+								"HingePin",
+								"ReceiverAssembly",
+								"ReceiverGrip",
+								"Trigger1",
+								"Trigger2",
+								"BarrelAssembly",
+							]
+						}
+					},
+				]
+			},
+			{
+				_class = "BoneMarkupList"
+				children = 
+				[
+					{
+						_class = "BoneMarkup"
+						name = "WeaponRoot"
+						target_bone = "WeaponRoot"
+						ignore_Translation = false
+						ignore_rotation = false
+						do_not_discard = false
+					},
+					{
+						_class = "BoneMarkup"
+						name = "barrels"
+						target_bone = "barrels"
+						ignore_Translation = false
+						ignore_rotation = false
+						do_not_discard = false
+					},
+					{
+						_class = "BoneMarkup"
+						name = "GripAttach"
+						target_bone = "GripAttach"
+						ignore_Translation = false
+						ignore_rotation = false
+						do_not_discard = false
+					},
+					{
+						_class = "BoneMarkup"
+						name = "MuzzleLeft"
+						target_bone = "MuzzleLeft"
+						ignore_Translation = false
+						ignore_rotation = false
+						do_not_discard = false
+					},
+					{
+						_class = "BoneMarkup"
+						name = "MuzzleRight"
+						target_bone = "MuzzleRight"
+						ignore_Translation = false
+						ignore_rotation = false
+						do_not_discard = false
+					},
+					{
+						_class = "BoneMarkup"
+						name = "Receiver"
+						target_bone = "Receiver"
+						ignore_Translation = false
+						ignore_rotation = false
+						do_not_discard = false
+					},
+					{
+						_class = "BoneMarkup"
+						name = "Trigger1"
+						target_bone = "Trigger1"
+						ignore_Translation = false
+						ignore_rotation = false
+						do_not_discard = false
+					},
+					{
+						_class = "BoneMarkup"
+						name = "Trigger2"
+						target_bone = "Trigger2"
+						ignore_Translation = false
+						ignore_rotation = false
+						do_not_discard = false
+					},
+					{
+						_class = "BoneMarkup"
+						name = "WeaponControl"
+						target_bone = "WeaponControl"
+						ignore_Translation = false
+						ignore_rotation = false
+						do_not_discard = false
+					},
+				]
+				bone_cull_type = "Aggressive"
+			},
+			{
+				_class = "AnimationList"
+				children = 
+				[
+					{
+						_class = "AnimFile"
+						name = "ShotgunBind"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						disable_interpolation = false
+						enable_scale = false
+						source_filename = "models/Shotgun.fbx"
+						start_frame = -1
+						end_frame = -1
+						framerate = 1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "ShotgunReload"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						disable_interpolation = false
+						enable_scale = false
+						source_filename = "models/Shotgun.fbx"
+						start_frame = -1
+						end_frame = -1
+						framerate = 25.0
+						take = 1
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "ShotgunShoot"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						disable_interpolation = false
+						enable_scale = false
+						source_filename = "models/Shotgun.fbx"
+						start_frame = -1
+						end_frame = -1
+						framerate = 11.0
+						take = 2
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "ShotgunWalk"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						disable_interpolation = false
+						enable_scale = false
+						source_filename = "models/Shotgun.fbx"
+						start_frame = -1
+						end_frame = -1
+						framerate = 16.0
+						take = 3
+						reverse = false
+					},
+				]
+				default_root_bone_name = ""
+			},
+		]
+		model_archetype = ""
+		primary_associated_entity = ""
+		anim_graph_name = ""
+		base_model_name = ""
+	}
+}

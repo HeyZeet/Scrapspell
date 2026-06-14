@@ -24,13 +24,27 @@ public sealed class PipeBlaster : Component
 
 	[Property] public GameObject MuzzleFlashPrefab { get; set; }
 	[Property] public GameObject ImpactEffectPrefab { get; set; }
+	[Property] public float MuzzleFlashLifetime { get; set; } = 0.25f;
+	[Property] public float ImpactEffectLifetime { get; set; } = 2.0f;
+	[Property] public string LeftMuzzleBone { get; set; } = "MuzzleLeft";
+	[Property] public string RightMuzzleBone { get; set; } = "MuzzleRight";
 	[Property] public SoundEvent FireSound { get; set; }
 	[Property] public SoundEvent ReloadSound { get; set; }
+
+	[Property] public SkinnedModelRenderer ViewModelRenderer { get; set; }
+	[Property] public ScrapspellFirstPersonController PlayerController { get; set; }
+	[Property] public string BindAnimation { get; set; } = "ShotgunBind";
+	[Property] public string ShootAnimation { get; set; } = "ShotgunShoot";
+	[Property] public string ReloadAnimation { get; set; } = "ShotgunReload";
+	[Property] public string WalkAnimation { get; set; } = "ShotgunWalk";
+	[Property] public float WalkAnimationSpeedThreshold { get; set; } = 5.0f;
 
 	bool isReloading;
 	float reloadFinishTime;
 	float lastFireTime = -999.0f;
 	float currentRecoil;
+	string currentViewModelAnimation;
+	bool fireLeftBarrelNext = true;
 	int shellKickerStacks;
 	int rustBurstStacks;
 	float startingDamagePerPellet;
@@ -53,6 +67,8 @@ public sealed class PipeBlaster : Component
 		startingFireRate = FireRate;
 		startingAmmoInClip = AmmoInClip;
 		FindCameraIfNeeded();
+		FindViewModelComponentsIfNeeded();
+		PlayViewModelAnimation( BindAnimation, false, true );
 	}
 
 	protected override void OnUpdate()
@@ -64,6 +80,7 @@ public sealed class PipeBlaster : Component
 
 		if ( !InputEnabled )
 		{
+			PlayViewModelAnimation( BindAnimation, false );
 			UpdateCameraRecoil();
 			return;
 		}
@@ -77,6 +94,7 @@ public sealed class PipeBlaster : Component
 		if ( Input.Down( "Attack1" ) )
 			TryFire();
 
+		UpdateViewModelAnimation();
 		UpdateCameraRecoil();
 	}
 
@@ -156,6 +174,8 @@ public sealed class PipeBlaster : Component
 		rustBurstStacks = 0;
 		isReloading = false;
 		currentRecoil = 0.0f;
+		fireLeftBarrelNext = true;
+		PlayViewModelAnimation( BindAnimation, false, true );
 
 		Log.Info( "Pipe Blaster reset for a new run." );
 	}
@@ -172,11 +192,14 @@ public sealed class PipeBlaster : Component
 
 		lastFireTime = Time.Now;
 		AmmoInClip--;
+		var firedMuzzleBone = fireLeftBarrelNext ? LeftMuzzleBone : RightMuzzleBone;
+		fireLeftBarrelNext = !fireLeftBarrelNext;
 
 		Log.Info( $"PipeBlaster fired. Ammo: {AmmoInClip}/{ClipSize}" );
 
 		currentRecoil += RecoilAmount;
-		PlayFireEffects();
+		PlayViewModelAnimation( ShootAnimation, false, true );
+		PlayFireEffects( firedMuzzleBone );
 
 		for ( var i = 0; i < PelletCount; i++ )
 		{
@@ -348,7 +371,7 @@ public sealed class PipeBlaster : Component
 		currentRecoil = MathX.Lerp( currentRecoil, 0.0f, Time.Delta * RecoilRecoverySpeed );
 	}
 
-	void PlayFireEffects()
+	void PlayFireEffects( string muzzleBone )
 	{
 		if ( FireSound is not null )
 			Sound.Play( FireSound, Camera.WorldPosition );
@@ -356,9 +379,21 @@ public sealed class PipeBlaster : Component
 		if ( !MuzzleFlashPrefab.IsValid() )
 			return;
 
-		var muzzlePosition = Camera.WorldPosition + Camera.WorldRotation.Forward * 24.0f;
-		var muzzleTransform = new Transform( muzzlePosition, Camera.WorldRotation );
-		MuzzleFlashPrefab.Clone( muzzleTransform );
+		FindViewModelComponentsIfNeeded();
+
+		Transform muzzleTransform = default;
+		var hasMuzzleBone = ViewModelRenderer.IsValid()
+			&& ViewModelRenderer.TryGetBoneTransform( muzzleBone, out muzzleTransform );
+
+		if ( !hasMuzzleBone )
+		{
+			Log.Warning( $"PipeBlaster could not find muzzle bone '{muzzleBone}'. Using camera fallback." );
+			var muzzlePosition = Camera.WorldPosition + Camera.WorldRotation.Forward * 24.0f;
+			muzzleTransform = new Transform( muzzlePosition, Camera.WorldRotation );
+		}
+
+		var muzzleFlash = MuzzleFlashPrefab.Clone( muzzleTransform );
+		AddTemporaryLifetime( muzzleFlash, MuzzleFlashLifetime );
 	}
 
 	void SpawnImpactEffect( SceneTraceResult trace )
@@ -368,7 +403,19 @@ public sealed class PipeBlaster : Component
 
 		var impactRotation = Rotation.LookAt( trace.Normal );
 		var impactTransform = new Transform( trace.HitPosition + trace.Normal * 2.0f, impactRotation );
-		ImpactEffectPrefab.Clone( impactTransform );
+		var impactEffect = ImpactEffectPrefab.Clone( impactTransform );
+		AddTemporaryLifetime( impactEffect, ImpactEffectLifetime );
+	}
+
+	void AddTemporaryLifetime( GameObject effect, float lifetime )
+	{
+		if ( !effect.IsValid() )
+			return;
+
+		var temporaryEffect = effect.Components.GetOrCreate<TemporaryEffect>();
+		temporaryEffect.DestroyAfterSeconds = lifetime < 0.0f ? 0.0f : lifetime;
+		temporaryEffect.BecomeOrphan = false;
+		temporaryEffect.WaitForChildEffects = true;
 	}
 
 	void TryStartReload()
@@ -378,6 +425,7 @@ public sealed class PipeBlaster : Component
 
 		isReloading = true;
 		reloadFinishTime = Time.Now + ReloadTime;
+		PlayViewModelAnimation( ReloadAnimation, false, true, ReloadTime );
 
 		Log.Info( "PipeBlaster reload started." );
 
@@ -392,6 +440,7 @@ public sealed class PipeBlaster : Component
 
 		isReloading = false;
 		AmmoInClip = ClipSize;
+		fireLeftBarrelNext = true;
 
 		Log.Info( $"PipeBlaster reload finished. Ammo: {AmmoInClip}/{ClipSize}" );
 		TriggerShellKicker();
@@ -440,5 +489,83 @@ public sealed class PipeBlaster : Component
 
 		Camera = Scene.GetAllComponents<CameraComponent>().FirstOrDefault( x => x.IsMainCamera );
 		Camera ??= Scene.GetAllComponents<CameraComponent>().FirstOrDefault();
+	}
+
+	void FindViewModelComponentsIfNeeded()
+	{
+		if ( !ViewModelRenderer.IsValid() )
+		{
+			ViewModelRenderer = Scene.GetAllComponents<SkinnedModelRenderer>()
+				.FirstOrDefault( x => x.GameObject.Name == "ViewModel" );
+		}
+
+		if ( !PlayerController.IsValid() )
+			PlayerController = Scene.GetAllComponents<ScrapspellFirstPersonController>().FirstOrDefault();
+
+		if ( ViewModelRenderer.IsValid() )
+			ViewModelRenderer.UseAnimGraph = false;
+	}
+
+	void UpdateViewModelAnimation()
+	{
+		FindViewModelComponentsIfNeeded();
+
+		if ( !ViewModelRenderer.IsValid() || isReloading )
+			return;
+
+		if ( currentViewModelAnimation == ShootAnimation && !ViewModelRenderer.Sequence.IsFinished )
+			return;
+
+		var horizontalSpeed = 0.0f;
+		var isMoving = false;
+
+		if ( PlayerController.IsValid() && PlayerController.Controller.IsValid() )
+		{
+			horizontalSpeed = PlayerController.Controller.Velocity.WithZ( 0 ).Length;
+			isMoving = PlayerController.Controller.IsOnGround
+				&& horizontalSpeed > WalkAnimationSpeedThreshold;
+		}
+
+		if ( !isMoving )
+		{
+			PlayViewModelAnimation( BindAnimation, false );
+			return;
+		}
+
+		PlayViewModelAnimation( WalkAnimation, true );
+
+		if ( ViewModelRenderer.IsValid() )
+		{
+			var baseWalkSpeed = PlayerController.WalkSpeed.Clamp( 1.0f, 10000.0f );
+			ViewModelRenderer.PlaybackRate = (horizontalSpeed / baseWalkSpeed).Clamp( 0.65f, 1.6f );
+		}
+	}
+
+	void PlayViewModelAnimation(
+		string animationName,
+		bool looping,
+		bool restart = false,
+		float desiredDuration = 0.0f )
+	{
+		FindViewModelComponentsIfNeeded();
+
+		if ( !ViewModelRenderer.IsValid() || string.IsNullOrWhiteSpace( animationName ) )
+			return;
+
+		if ( !restart && currentViewModelAnimation == animationName )
+			return;
+
+		ViewModelRenderer.Sequence.Name = animationName;
+		ViewModelRenderer.Sequence.Time = 0.0f;
+		ViewModelRenderer.Sequence.Looping = looping;
+		ViewModelRenderer.Sequence.Blending = true;
+		ViewModelRenderer.PlaybackRate = 1.0f;
+		currentViewModelAnimation = animationName;
+
+		if ( desiredDuration > 0.0f && ViewModelRenderer.Sequence.Duration > 0.0f )
+		{
+			ViewModelRenderer.PlaybackRate =
+				ViewModelRenderer.Sequence.Duration / desiredDuration;
+		}
 	}
 }
